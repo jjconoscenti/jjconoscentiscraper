@@ -31,14 +31,12 @@ router.get('/scrape', function(req, res) {
   request('http://www.theonion.com/', function(error, response, html) {
 
     var $ = cheerio.load(html);
-
     var titlesArray = [];
 
     $('article .inner').each(function(i, element) {
-
         var result = {};
 
-        result.title = $(this).children('header').children('h2').text().trim() + ""; //convert to string for error handling later
+        result.title = $(this).children('header').children('h2').text().trim() + "";
 
         result.link = 'http://www.theonion.com' + $(this).children('header').children('h2').children('a').attr('href').trim();
         result.summary = $(this).children('div').text().trim() + "";
@@ -52,22 +50,18 @@ router.get('/scrape', function(req, res) {
                 entry.save(function(err, doc) {
                   if (err) {
                     console.log(err);
-                  }
-                  else {
+                  } else {
                     console.log(doc);
                   }
                 });
-              }
-              else{
+              } else {
                 console.log('Redundant Database Content. Not saved to DB.')
               }
             });
-        }
-        else{
+        } else {
           console.log('Redundant Onion Content. Not Saved to DB.')
         }
-      }
-      else{
+      } else {
         console.log('Empty Content. Not Saved to DB.')
       }
     });
@@ -78,11 +72,8 @@ router.get('/scrape', function(req, res) {
 router.post('/add/comment/:id', function (req, res){
 
   var articleId = req.params.id;
-
   var commentAuthor = req.body.name;
-
   var commentContent = req.body.comment;
-
   var result = {
     author: commentAuthor,
     content: commentContent
@@ -93,8 +84,7 @@ var entry = new Comment (result);
   entry.save(function(err, doc) {
     if (err) {
       console.log(err);
-    }
-    else {
+    } else {
       Article.findOneAndUpdate({'_id': articleId}, {$push: {'comments':doc._id}}, {new: true})
       .exec(function(err, doc){
         if (err){
@@ -116,8 +106,7 @@ router.post('/remove/comment/:id', function (req, res){
 
     if (err) {
       console.log(err);
-    }
-    else {
+    } else {
       res.sendStatus(200);
     }
 
